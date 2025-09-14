@@ -15,7 +15,18 @@ load_dotenv()
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"), base_url="https://openrouter.ai/api/v1")
 
 # Semantic similarity model for JD ranking
-embedding_model = SentenceTransformer('sentence-transformers/paraphrase-MiniLM-L3-v2')
+# embedding_model = SentenceTransformer('sentence-transformers/paraphrase-MiniLM-L3-v2')
+
+_embedding_model = None
+
+def get_embedding_model():
+    """Lazy load a small SentenceTransformer model to save memory at startup."""
+    global _embedding_model
+    if _embedding_model is None:
+        from sentence_transformers import SentenceTransformer
+        # lightweight model (small memory footprint)
+        _embedding_model = SentenceTransformer('sentence-transformers/paraphrase-MiniLM-L3-v2')
+    return _embedding_model
 
 # --- Utility Functions ---
 def extract_text_from_pdf(pdf_path):
@@ -206,6 +217,7 @@ Resume:
 # --- JD Ranking ---
 
 def rank_resumes(jd_text, resumes):
+    embedding_model = get_embedding_model()
 
     # 1) Extract JD skills deterministically (preserve order)
     jd_skills = extract_skills_from_text(jd_text)
