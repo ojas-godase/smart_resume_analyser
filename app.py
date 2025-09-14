@@ -15,7 +15,7 @@ load_dotenv()
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"), base_url="https://openrouter.ai/api/v1")
 
 # Semantic similarity model for JD ranking
-embedding_model = SentenceTransformer('all-MiniLM-L6-v2')
+embedding_model = SentenceTransformer('sentence-transformers/paraphrase-MiniLM-L3-v2')
 
 # --- Utility Functions ---
 def extract_text_from_pdf(pdf_path):
@@ -300,10 +300,7 @@ def analyze_resume():
                 skills = extract_skills_from_text(text)
                 ats_score = calculate_ats_score(text)
                 section_stats = analyze_sections(text)
-
-                # one LLM call
                 summary_text, suggestions_list, prediction = generate_summary_suggestions_and_role(text)
-
             finally:
                 try:
                     os.remove(tmp_path)

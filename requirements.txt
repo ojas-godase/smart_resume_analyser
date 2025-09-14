@@ -1,9 +1,7 @@
 Flask
-python-dotenv
+gunicorn
 PyMuPDF
 pandas
-regex
+python-dotenv
 sentence-transformers
 openai
-gunicorn
-
