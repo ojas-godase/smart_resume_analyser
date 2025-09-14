@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Smart Resume</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        background-color: #f4f4f4;
+        font-family: "Inter", sans-serif;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-height: 100vh;
+      }
+
+      header {
+        width: 100%;
+        padding: 30px 0 10px;
+        text-align: center;
+      }
+
+      h1 {
+        font-size: 3.5rem;
+        color: #222;
+        margin: 0;
+      }
+
+      .container {
+        background-color: #ffffff;
+        border-radius: 20px;
+        padding: 40px;
+        margin-top: 40px;
+        width: 85%;
+        max-width: 1200px;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
+      }
+
+      form {
+        margin-top: 40px;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        flex: 1;
+      }
+
+      label {
+        font-size: 1.2rem;
+        margin-bottom: 10px;
+        color: #333;
+      }
+
+      input[type="file"] {
+        font-size: 1rem;
+        margin-bottom: 20px;
+      }
+
+      button {
+        background-color: #222;
+        color: white;
+        border: none;
+        padding: 12px 25px;
+        font-size: 1rem;
+        border-radius: 6px;
+        cursor: pointer;
+      }
+
+      .result {
+        flex: 1;
+        padding-left: 60px;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        gap: 20px;
+      }
+
+      .result-box {
+        background-color: #f9f9f9;
+        border-left: 5px solid #222;
+        padding: 20px;
+        border-radius: 10px;
+      }
+
+      .result-box strong {
+        font-size: 1.8rem;
+        color: #111;
+      }
+
+      .result-label {
+        font-size: 1rem;
+        color: #666;
+        margin-bottom: 5px;
+      }
+
+      .section-analysis {
+        font-size: 0.95rem;
+        color: #333;
+        line-height: 1.6;
+      }
+
+      .present {
+        color: green;
+      }
+
+      .absent {
+        color: red;
+      }
+
+      .skill-container {
+        background-color: #ffffff;
+        border-radius: 20px;
+        padding: 20px;
+        margin-top: 2rem;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+      }
+
+      .skill-container h2 {
+        margin-top: 0;
+        font-size: 1.4rem;
+        color: #222;
+      }
+
+      .skill-boxes {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 10px;
+      }
+
+      .skill-box {
+        background-color: #f0f0f0;
+        border-radius: 20px;
+        padding: 6px 14px;
+        font-size: 14px;
+        font-family: "Inter", sans-serif;
+        border: 1px solid #ccc;
+        color: #333;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Smart Resume</h1>
+    </header>
+
+    <div class="container">
+      <form method="post" enctype="multipart/form-data">
+        <label for="resume">Upload your resume (PDF only):</label>
+        <input type="file" name="resume" accept=".pdf" required />
+        <button type="submit">Predict</button>
+        {% if skills %}
+        <div class="skill-container">
+          <h2>Extracted Skills</h2>
+          <div class="skill-boxes">
+            {% for skill in skills %}
+            <div class="skill-box">{{ skill }}</div>
+            {% endfor %}
+          </div>
+        </div>
+        {% endif %}
+      </form>
+
+      {% if prediction %}
+      <div class="result">
+        <div class="result-box">
+          <div class="result-label">Predicted Resume Type:</div>
+          <strong>{{ prediction }}</strong>
+        </div>
+
+        {% if ats_score is not none %}
+        <div class="result-box">
+          <div class="result-label">ATS Friendliness Score:</div>
+          <strong>{{ ats_score }} / 100</strong>
+        </div>
+        {% endif %} {% if sections %}
+        <div class="result-box">
+          <div class="result-label">Resume Section Breakdown:</div>
+          <div class="section-analysis">
+            <ul>
+              {% for section, info in sections.items() %}
+              <li>
+                <span class="{{ 'present' if info.present else 'absent' }}">
+                  {{ section }} — {{ "Present" if info.present else "Absent" }}
+                </span>
+                {% if info.present %} — {{ info.bullet_count }} point{{ "s" if
+                info.bullet_count != 1 }} {% endif %}
+              </li>
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
+        {% endif %}
+      </div>
+      {% endif %}
+    </div>
+
+    {% if summary %}
+    <div
+      style="
+        margin-top: 40px;
+        width: 85%;
+        max-width: 1200px;
+        background-color: #ffffff;
+        border-radius: 20px;
+        padding: 30px 40px;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
+        text-align: left;
+      "
+    >
+      <div
+        class="result-label"
+        style="font-size: 1.2rem; color: #666; margin-bottom: 15px"
+      >
+        Job-Relevant Resume Summary:
+      </div>
+      <p style="font-size: 1.1rem; color: #222; line-height: 1.8">
+        {{ summary }}
+      </p>
+    </div>
+    {% endif %} {% if suggestions %}
+    <div
+      style="
+        margin-top: 40px;
+        width: 85%;
+        max-width: 1200px;
+        background-color: #ffffff;
+        border-radius: 20px;
+        padding: 30px 40px;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
+        text-align: left;
+      "
+    >
+      <div
+        class="result-label"
+        style="font-size: 1.2rem; color: #666; margin-bottom: 15px"
+      >
+        Suggestions to Improve Your Resume for a {{ prediction }} Role:
+      </div>
+
+      <div style="font-size: 1.05rem; color: #222; line-height: 1.8">
+        {{ suggestions | safe }}
+      </div>
+    </div>
+    {% endif %}
+  </body>
+</html>

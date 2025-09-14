@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Smart Resume - Analyze Resume</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #f4f4f4;
+        --card: #ffffff;
+        --muted: #666;
+        --text: #222;
+        --accent: #222;
+        --card-pad: 30px;
+        --radius: 14px;
+      }
+
+      html,
+      body {
+        font-size: 16px; /* base */
+      }
+
+      body {
+        margin: 0;
+        padding: 0;
+        background-color: var(--bg);
+        font-family: "Inter", sans-serif;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-height: 100vh;
+      }
+
+      header {
+        width: 100%;
+        padding: 30px 0 10px;
+        text-align: center;
+      }
+
+      h1 {
+        font-size: 2.2rem;
+        color: #222;
+        margin: 0;
+      }
+
+      .container {
+        background-color: var(--card);
+        border-radius: 20px;
+        padding: 28px;
+        margin-top: 28px;
+        width: 90%;
+        max-width: 1200px;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
+      }
+
+      form {
+        margin-top: 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        flex: 1;
+      }
+
+      label {
+        font-size: 1.05rem;
+        margin-bottom: 10px;
+        color: #333;
+      }
+
+      input[type="file"] {
+        font-size: 1rem;
+        margin-bottom: 20px;
+      }
+
+      button {
+        background-color: var(--accent);
+        color: white;
+        border: none;
+        padding: 12px 25px;
+        font-size: 1rem;
+        border-radius: 6px;
+        cursor: pointer;
+        margin-bottom: 20px;
+      }
+
+      .back-home-btn {
+        background: linear-gradient(135deg, #222222, #000000);
+        color: #fff;
+        border: none;
+        padding: 12px 15px;
+        font-size: 1rem;
+        font-weight: 600;
+        border-radius: 20px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        margin-bottom: 20px;
+      }
+
+      .back-home-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+        background: linear-gradient(135deg, #444444, #111111);
+      }
+
+      .back-home-btn:active {
+        transform: translateY(0);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      }
+
+      .result {
+        flex: 1;
+        padding-left: 40px;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        gap: 18px;
+      }
+
+      .result-box {
+        background-color: #f9f9f9;
+        border-left: 5px solid var(--accent);
+        padding: 18px;
+        border-radius: 10px;
+      }
+
+      .result-box strong {
+        font-size: 1.4rem;
+        color: #111;
+      }
+
+      .result-label {
+        font-size: 0.98rem;
+        color: var(--muted);
+        margin-bottom: 6px;
+      }
+
+      .section-analysis {
+        font-size: 0.98rem;
+        color: #333;
+        line-height: 1.6;
+      }
+
+      .present {
+        color: green;
+      }
+
+      .absent {
+        color: red;
+      }
+
+      .skill-container {
+        background-color: var(--card);
+        border-radius: 16px;
+        padding: 18px;
+        margin-top: 1.75rem;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+      }
+
+      .skill-container h2 {
+        margin-top: 0;
+        font-size: 1.2rem;
+        color: #222;
+      }
+
+      .skill-boxes {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 10px;
+      }
+
+      .skill-box {
+        background-color: #f0f0f0;
+        border-radius: 12px;
+        padding: 8px 12px;
+        font-size: 0.95rem;
+        font-family: "Inter", sans-serif;
+        border: 1px solid #e0e0e0;
+        color: #333;
+      }
+
+      /* Summary & Suggestions card styles (improved readability) */
+      .summary-box,
+      .suggestions-box {
+        margin-top: 28px;
+        width: 90%;
+        max-width: 1200px;
+        background-color: var(--card);
+        border-radius: var(--radius);
+        padding: var(--card-pad);
+        box-shadow: 0 6px 25px rgba(0, 0, 0, 0.04);
+        text-align: left;
+      }
+
+      .summary-box .result-label,
+      .suggestions-box .result-label {
+        font-size: 1.15rem;
+        color: var(--muted);
+        margin-bottom: 12px;
+        font-weight: 600;
+      }
+
+      /* Summary paragraph: larger & scrollable */
+      .summary-text {
+        font-size: 1.05rem; /* slightly larger text */
+        color: var(--text);
+        line-height: 1.85; /* airy line-height for readability */
+        max-height: 360px; /* limit height so page doesn't grow too long */
+        overflow: auto; /* scroll when long */
+        padding-right: 6px; /* space for scrollbar */
+        text-align: left;
+      }
+
+      /* Suggestions styling */
+      .suggestions-list {
+        font-size: 1.03rem;
+        color: var(--text);
+        line-height: 1.8;
+        margin: 0;
+        padding-left: 22px;
+      }
+
+      .suggestions-list li {
+        margin-bottom: 10px;
+      }
+
+      /* Responsive tweaks */
+      @media (max-width: 900px) {
+        .container,
+        .summary-box,
+        .suggestions-box {
+          width: 96%;
+          padding: 20px;
+        }
+        .result {
+          padding-left: 0;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Smart Resume</h1>
+    </header>
+
+    <div class="container">
+      <form method="post" enctype="multipart/form-data">
+        <a href="/">
+          <button type="button" class="back-home-btn">← Back to Home</button>
+        </a>
+
+        <label for="resume">Upload your resume (PDF only):</label>
+        <input type="file" name="resume" accept=".pdf" required />
+        <button type="submit">Predict</button>
+
+        {% if skills %}
+        <div class="skill-container">
+          <h2>Extracted Skills</h2>
+          <div class="skill-boxes">
+            {% for skill in skills %}
+            <div class="skill-box">{{ skill }}</div>
+            {% endfor %}
+          </div>
+        </div>
+        {% endif %}
+      </form>
+
+      {% if prediction %}
+      <div class="result">
+        <div class="result-box">
+          <div class="result-label">Predicted Resume Type:</div>
+          <strong>{{ prediction }}</strong>
+        </div>
+
+        {% if ats_score is not none %}
+        <div class="result-box">
+          <div class="result-label">ATS Friendliness Score:</div>
+          <strong>{{ ats_score }} / 100</strong>
+        </div>
+        {% endif %} {% if sections %}
+        <div class="result-box">
+          <div class="result-label">Resume Section Breakdown:</div>
+          <div class="section-analysis">
+            <ul>
+              {% for section, info in sections.items() %}
+              <li>
+                <span class="{{ 'present' if info.present else 'absent' }}">
+                  {{ section }} — {{ "Present" if info.present else "Absent" }}
+                </span>
+              </li>
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
+        {% endif %}
+      </div>
+      {% endif %}
+    </div>
+
+    {% if summary %}
+    <div class="summary-box">
+      <div class="result-label">Job-Relevant Resume Summary:</div>
+      <div class="summary-text">{{ summary }}</div>
+    </div>
+    {% endif %} {% if suggestions %}
+    <div class="suggestions-box">
+      <div class="result-label">
+        Suggestions to Improve Your Resume for a {{ prediction }} Role:
+      </div>
+      <ul class="suggestions-list">
+        {% for s in suggestions %}
+        <li>{{ s }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% endif %}
+  </body>
+</html>
