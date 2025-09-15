@@ -39,17 +39,17 @@ Smart Resume Analyzer is a Flask-based web application that analyzes resumes and
 
 1. **Home Page**
 <img width="1512" height="824" alt="Screenshot 2025-09-15 at 1 32 37 PM" src="https://github.com/user-attachments/assets/be7ddad3-1ba2-4224-a876-42d764f39d26" />
----
+ 
 2. **Resume Analysis Page**
 <img width="1512" height="824" alt="Screenshot 2025-09-15 at 1 32 46 PM" src="https://github.com/user-attachments/assets/ffb1abc5-4bf8-4293-af1d-6b0405b00d62" />
 <img width="1512" height="824" alt="Screenshot 2025-09-15 at 1 34 06 PM" src="https://github.com/user-attachments/assets/cb59ccb5-c73c-4865-9f92-38789750cfb9" />
 <img width="1512" height="824" alt="Screenshot 2025-09-15 at 1 34 22 PM" src="https://github.com/user-attachments/assets/acae8664-49b1-4d83-99dd-7d8097c56276" />
----
-4. **Job Description Matching & Ranking**
+ 
+3. **Job Description Matching & Ranking**
 <img width="1512" height="824" alt="Screenshot 2025-09-15 at 1 35 16 PM" src="https://github.com/user-attachments/assets/35bfe07e-3520-4d2d-aa8c-d7433b477aae" />
 <img width="1512" height="824" alt="Screenshot 2025-09-15 at 1 35 24 PM" src="https://github.com/user-attachments/assets/f9b87c14-eda7-4cbb-a146-ee0f6f25f713" />
 <img width="1512" height="824" alt="Screenshot 2025-09-15 at 1 35 46 PM" src="https://github.com/user-attachments/assets/6b6c4450-bd14-442e-a707-d0da6683633c" />
---- 
+
 
 ## File Structure
 
