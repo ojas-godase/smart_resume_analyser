@@ -62,7 +62,7 @@ app/
 ├── templates/
 │   ├── analyze_resume.html       # Resume analysis results page
 │   ├── home.html                 # Homepage
-│   ├── index.html                # Landing page (if used)
+│   ├── index.html                
 │   └── jd_ranking.html           # Resume ranking results page
 │
 ├── app.py                        # Main Flask application
@@ -79,7 +79,7 @@ app/
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/your-username/smart-resume.git
+git clone https://github.com/ojas-godase/smart_resume_analyser.git
 cd smart-resume
 ```
 
