@@ -321,10 +321,6 @@ def analyze_resume():
     )
 
 
-
-
-
-
 @app.route("/jd_ranking", methods=["GET","POST"])
 def jd_ranking():
     ranked_resumes = None
