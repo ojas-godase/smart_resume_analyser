@@ -34,12 +34,31 @@ Smart Resume Analyzer is a Flask-based web application that analyzes resumes and
    * Dictionary-based matching using a curated dataset of 50,000+ skills.
    * Extracted skills are highlighted for each resume.
      
-4. Model Evaluation 
+4. **Model Evaluation**  
 
-   *`evaluation.ipynb` notebook generates **synthetic resumes** for controlled testing.
+   * `evaluation.ipynb` notebook generates **synthetic resumes** for controlled testing.
    * Computes **Skill Extraction Precision, Recall, F1**.
    * Compares ATS scores with recruiter-like scores using **Pearson, Spearman, Kendall correlation**.
    * Evaluates ranking quality using **Top-3 Accuracy** and **NDCG@5**.
+
+   **Latest Results (from `evaluation.ipynb` run):**
+
+   - **Skill Extraction**
+     - Precision: **0.81**
+     - Recall: **0.57**
+     - F1 Score: **0.67**
+
+   - **ATS vs Recruiter Correlation (Initial Baseline)**
+     - Pearson Correlation: **0.04**
+     - Spearman Correlation: **0.18**
+
+   - **JD Ranking Performance (After Tuning)**
+     - Spearman Rank Correlation: **0.85**
+     - Kendall Tau Correlation: **0.72**
+     - Top-3 Accuracy: **100%**
+     - NDCG@5: **0.98**
+
+   These metrics demonstrate that the **Smart Resume Analyzer** provides reliable skill extraction and strong ranking alignment with recruiter-like judgments after tuning.
 
 ---
 ## App Demo 
