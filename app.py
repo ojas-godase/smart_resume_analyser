@@ -106,8 +106,9 @@ def calculate_ats_score(text):
 
 # Skills Extraction Model - Dictionary Matching Approach
 
-skills_df = pd.read_csv("skills_dataset_top50000.csv")  
+skills_df = pd.read_csv("skills.csv")
 skills_list = [s.strip().lower() for s in skills_df["Skill"].dropna()]
+
 
 # Sort skills by length (longest phrases first to avoid partial overlaps)
 skills_list = sorted(skills_list, key=len, reverse=True)
@@ -151,7 +152,7 @@ def generate_summary_suggestions_and_role(resume_text: str):
 You are a professional resume analyst.
 
 INSTRUCTIONS (follow exactly):
-1) Write a single FORMAL PARAGRAPH summary of the resume. It should be atleast 500 words long.
+1) Write a single FORMAL PARAGRAPH summary of the resume. It should be atleast 200 words long.
 2) Give exactly 10 concrete , actionable suggestions to improve this resume.
 3) Predict the most likely job role.
 
