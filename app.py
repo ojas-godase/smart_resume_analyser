@@ -5,7 +5,7 @@ import re
 import os
 from dotenv import load_dotenv
 import json
-from sentence_transformers import SentenceTransformer, util
+# from sentence_transformers import SentenceTransformer, util
 from openai import OpenAI
 import tempfile
 
@@ -15,7 +15,7 @@ load_dotenv()
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"), base_url="https://openrouter.ai/api/v1")
 
 # Semantic similarity model for JD ranking
-embedding_model = SentenceTransformer('all-MiniLM-L6-v2')
+# embedding_model = SentenceTransformer('all-MiniLM-L6-v2')
 
 # --- Utility Functions ---
 def extract_text_from_pdf(pdf_path):
@@ -64,7 +64,7 @@ def calculate_ats_score(text):
 
     lower = text.lower()
     score = 0
-    total = 12  # total possible points
+    total = 12  
 
     sections = analyze_sections(text)
 
@@ -187,10 +187,8 @@ Resume:
     raw = resp.choices[0].message.content.strip()
 
     try:
-        # direct parse
         obj = json.loads(raw)
     except Exception:
-        # try to extract {...} block
         match = re.search(r"\{.*\}", raw, flags=re.S)
         if not match:
             raise ValueError(f"Model did not return JSON:\n{raw}")
@@ -205,78 +203,78 @@ Resume:
 
 # --- JD Ranking ---
 
-def rank_resumes(jd_text, resumes):
+# def rank_resumes(jd_text, resumes):
 
-    # 1) Extract JD skills deterministically (preserve order)
-    jd_skills = extract_skills_from_text(jd_text)
-    jd_skills = [s.lower() for s in jd_skills]
+#     # 1) Extract JD skills deterministically 
+#     jd_skills = extract_skills_from_text(jd_text)
+#     jd_skills = [s.lower() for s in jd_skills]
 
-    # 2) Precompute JD embeddings (for skills and whole-jd)
-    jd_skill_embeddings = None
-    if jd_skills:
-        jd_skill_embeddings = embedding_model.encode(jd_skills, convert_to_tensor=True)
+#     # 2) Precompute JD embeddings 
+#     jd_skill_embeddings = None
+#     if jd_skills:
+#         jd_skill_embeddings = embedding_model.encode(jd_skills, convert_to_tensor=True)
 
-    jd_text_embedding = embedding_model.encode(jd_text, convert_to_tensor=True)
+#     jd_text_embedding = embedding_model.encode(jd_text, convert_to_tensor=True)
 
-    ranked_list = []
+#     ranked_list = []
 
-    for uploaded_file in resumes:
-        # Save to a temp file and ensure cleanup
-        with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp:
-            uploaded_file.save(tmp.name)
-            tmp_path = tmp.name
+#     for uploaded_file in resumes:
+#         # Save to a temp file and ensure cleanup
+#         with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp:
+#             uploaded_file.save(tmp.name)
+#             tmp_path = tmp.name
 
-        try:
-            text = extract_text_from_pdf(tmp_path)
+#         try:
+#             text = extract_text_from_pdf(tmp_path)
 
-            # Extract resume skills deterministically
-            resume_skills = extract_skills_from_text(text)
-            resume_skills = [s.lower() for s in resume_skills]
+#             # Extract resume skills deterministically
+#             resume_skills = extract_skills_from_text(text)
+#             resume_skills = [s.lower() for s in resume_skills]
 
-            # --- Skill match calculation ---
-            skill_match = 0.0
-            if resume_skills and jd_skill_embeddings is not None:
-                resume_skill_embeddings = embedding_model.encode(resume_skills, convert_to_tensor=True)
-                cosine_scores = util.cos_sim(resume_skill_embeddings, jd_skill_embeddings)  # shape R x J
-                # For each JD skill (column) take best matching resume skill (max over rows), then average
-                best_for_each_jd = cosine_scores.max(dim=0).values  # shape (J,)
-                skill_match = float(best_for_each_jd.mean().item())
+#             # --- Skill match calculation ---
+#             skill_match = 0.0
+#             if resume_skills and jd_skill_embeddings is not None:
+#                 resume_skill_embeddings = embedding_model.encode(resume_skills, convert_to_tensor=True)
+#                 cosine_scores = util.cos_sim(resume_skill_embeddings, jd_skill_embeddings)  # shape R x J
+#                 # For each JD skill (column) take best matching resume skill (max over rows), then average
+#                 best_for_each_jd = cosine_scores.max(dim=0).values  # shape (J,)
+#                 skill_match = float(best_for_each_jd.mean().item())
 
-            # --- Semantic similarity between whole resume and JD ---
-            semantic_score = float(util.cos_sim(
-                embedding_model.encode(text, convert_to_tensor=True),
-                jd_text_embedding
-            ).item())
+#             # --- Semantic similarity between whole resume and JD ---
+#             semantic_score = float(util.cos_sim(
+#                 embedding_model.encode(text, convert_to_tensor=True),
+#                 jd_text_embedding
+#             ).item())
 
-            # --- Clamp negative similarities to 0 and cap at 1 ---
-            skill_match = max(0.0, min(1.0, skill_match))
-            semantic_score = max(0.0, min(1.0, semantic_score))
+#             # --- Clamp negative similarities to 0 and cap at 1 ---
+#             skill_match = max(0.0, min(1.0, skill_match))
+#             semantic_score = max(0.0, min(1.0, semantic_score))
 
-            # --- ATS score (0..1) ---
-            ats_score = calculate_ats_score(text) / 100.0
-            ats_score = max(0.0, min(1.0, ats_score))
+#             # --- ATS score (0..1) ---
+#             ats_score = calculate_ats_score(text) / 100.0
+#             ats_score = max(0.0, min(1.0, ats_score))
 
-            # --- Final weighted score ---
-            final_score = 0.45 * skill_match + 0.35 * semantic_score + 0.2 * ats_score
-            final_score = max(0.0, min(1.0, final_score))
+#             # --- Final weighted score ---
+#             final_score = 0.45 * skill_match + 0.35 * semantic_score + 0.2 * ats_score
+#             final_score = max(0.0, min(1.0, final_score))
 
-            # Append rounded percentages
-            ranked_list.append({
-                "filename": uploaded_file.filename,
-                "skill_match": round(skill_match * 100, 1),
-                "semantic_score": round(semantic_score * 100, 1),
-                "ats_score": round(ats_score * 100, 1),
-                "final_score": round(final_score * 100, 1)
-            })
+#             # Append rounded percentages
+#             ranked_list.append({
+#                 "filename": uploaded_file.filename,
+#                 "skill_match": round(skill_match * 100, 1),
+#                 "semantic_score": round(semantic_score * 100, 1),
+#                 "ats_score": round(ats_score * 100, 1),
+#                 "final_score": round(final_score * 100, 1)
+#             })
 
-        finally:
-            try:
-                os.remove(tmp_path)
-            except OSError:
-                pass
+#         finally:
+#             try:
+#                 os.remove(tmp_path)
+#             except OSError:
+#                 pass
 
-    # Sort by final_score desc
-    return sorted(ranked_list, key=lambda x: x['final_score'], reverse=True)
+#     # Sort by final_score desc
+#     return sorted(ranked_list, key=lambda x: x['final_score'], reverse=True)
 
 
 # --- Flask App ---
@@ -293,15 +291,15 @@ def analyze_resume():
     if request.method == "POST":
         file = request.files.get("resume")
         if file and file.filename.endswith(".pdf"):
-            tmp_path = "temp_resume.pdf"
-            file.save(tmp_path)
+            with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp:
+                file.save(tmp.name)
+                tmp_path = tmp.name
             try:
                 text = extract_text_from_pdf(tmp_path)
                 skills = extract_skills_from_text(text)
                 ats_score = calculate_ats_score(text)
                 section_stats = analyze_sections(text)
 
-                # one LLM call
                 summary_text, suggestions_list, prediction = generate_summary_suggestions_and_role(text)
 
             finally:
@@ -321,15 +319,20 @@ def analyze_resume():
     )
 
 
-@app.route("/jd_ranking", methods=["GET","POST"])
+# @app.route("/jd_ranking", methods=["GET","POST"])
+# def jd_ranking():
+#     ranked_resumes = None
+#     if request.method == "POST":
+#         jd_text = request.form.get("jd_text")
+#         uploaded_files = request.files.getlist("resumes")
+#         if jd_text and uploaded_files:
+#             ranked_resumes = rank_resumes(jd_text, uploaded_files)
+#     return render_template("jd_ranking.html", ranked_resumes=ranked_resumes)
+
+@app.route("/jd_ranking", methods=["GET"])
 def jd_ranking():
-    ranked_resumes = None
-    if request.method == "POST":
-        jd_text = request.form.get("jd_text")
-        uploaded_files = request.files.getlist("resumes")
-        if jd_text and uploaded_files:
-            ranked_resumes = rank_resumes(jd_text, uploaded_files)
-    return render_template("jd_ranking.html", ranked_resumes=ranked_resumes)
+    return "JD ranking is disabled in the public demo. Full version available locally."
 
 if __name__ == "__main__":
-    app.run(debug=True, host="127.0.0.1", port=5000)
+    app.run(host="127.0.0.1", port=5000)
+

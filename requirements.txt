@@ -1,7 +1,9 @@
-Flask
+# sentence-transformers
+flask
 gunicorn
-PyMuPDF
-pandas
 python-dotenv
-sentence-transformers
+pymupdf
+pandas
 openai
+scikit-learn
+
