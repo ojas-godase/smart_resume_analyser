@@ -1,5 +1,13 @@
 # Smart Resume Analyzer
 
+End-to-end ATS + AI system that analyzes resumes, predicts roles, and ranks candidates against job descriptions using NLP and LLMs.
+
+## Why this project matters
+
+• Mimics real-world ATS + recruiter screening pipelines
+• Combines deterministic scoring with semantic AI models
+• Designed for both job-seekers and recruiters
+
 This website is live at: https://smart-resume-analyser-bnx0.onrender.com/
 Note: JD Ranking is disabled in Live Demo because of memory constraints.
 
