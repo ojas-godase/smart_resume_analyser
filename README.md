@@ -1,6 +1,7 @@
 # Smart Resume Analyzer
 
 This website is live at: https://smart-resume-analyser-bnx0.onrender.com/
+Note: JD Ranking is disabled in Live Demo because of memory constraints.
 
 ## Overview
 
